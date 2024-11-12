@@ -1,0 +1,8 @@
+venv/
+*.csv
+*.crdownload
+__pycache__/
+*.pdf
+conversa gpt.txt
+Timber-Chain-meu/
+TimberChain/
