@@ -3,6 +3,10 @@
 Para alterar as empresas plota
 """
 
+# Ignorando warnings
+import warnings
+warnings.filterwarnings("ignore")
+
 import matplotlib.pyplot as plt
 from creating_df import *
 from utils import *
