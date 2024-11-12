@@ -1,0 +1,2 @@
+aedv/mdtw_all.npy filter=lfs diff=lfs merge=lfs -text
+data/zip_pasta.zip filter=lfs diff=lfs merge=lfs -text
