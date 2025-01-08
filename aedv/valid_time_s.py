@@ -97,9 +97,9 @@ df_time_s_saida = ajusta_df_time_s('saida', full_date_range)
 if __name__ == "__main__":
 
     nice_print(" Dfs de entrada e de saida ")
-    print(df_time_s_entrada.head(), 'O'*50)
+    print(df_time_s_entrada.head(14), 'O'*50)
     df_time_s_entrada.info()
-    print(df_time_s_saida.head(), 'o'*50)
+    print(df_time_s_saida.head(14), 'o'*50)
     df_time_s_saida.info()
 
     # plt.title('Volume de Madeira que Saiu das Empresas selecionadas (2017)')
