@@ -1,0 +1,74 @@
+// Supply Chain Graph
+digraph {
+	Forest_1 [label="Forest_1
+(forest)" fillcolor=green fontcolor=white style=filled]
+	Forest_2 [label="Forest_2
+(forest)" fillcolor=green fontcolor=white style=filled]
+	Forest_3 [label="Forest_3
+(forest)" fillcolor=green fontcolor=white style=filled]
+	Forest_4 [label="Forest_4
+(forest)" fillcolor=green fontcolor=white style=filled]
+	Company_1 [label="Company_1
+(company)" fillcolor=blue fontcolor=white style=filled]
+	Company_2 [label="Company_2
+(company)" fillcolor=blue fontcolor=white style=filled]
+	Company_3 [label="Company_3
+(company)" fillcolor=blue fontcolor=white style=filled]
+	Company_4 [label="Company_4
+(company)" fillcolor=blue fontcolor=white style=filled]
+	Company_5 [label="Company_5
+(company)" fillcolor=blue fontcolor=white style=filled]
+	Company_6 [label="Company_6
+(company)" fillcolor=blue fontcolor=white style=filled]
+	Company_7 [label="Company_7
+(company)" fillcolor=blue fontcolor=white style=filled]
+	Company_8 [label="Company_8
+(company)" fillcolor=blue fontcolor=white style=filled]
+	Company_9 [label="Company_9
+(company)" fillcolor=blue fontcolor=white style=filled]
+	Company_10 [label="Company_10
+(company)" fillcolor=blue fontcolor=white style=filled]
+	Consumer_1 [label="Consumer_1
+(consumer)" fillcolor=red fontcolor=white style=filled]
+	Consumer_2 [label="Consumer_2
+(consumer)" fillcolor=red fontcolor=white style=filled]
+	Consumer_3 [label="Consumer_3
+(consumer)" fillcolor=red fontcolor=white style=filled]
+	Consumer_4 [label="Consumer_4
+(consumer)" fillcolor=red fontcolor=white style=filled]
+	Consumer_5 [label="Consumer_5
+(consumer)" fillcolor=red fontcolor=white style=filled]
+	Forest_1 -> Company_10 [label="Vol: 8"]
+	Forest_1 -> Company_1 [label="Vol: 5"]
+	Forest_1 -> Company_8 [label="Vol: 4"]
+	Forest_2 -> Company_3 [label="Vol: 12"]
+	Forest_2 -> Company_5 [label="Vol: 6"]
+	Forest_3 -> Company_9 [label="Vol: 8"]
+	Forest_3 -> Company_2 [label="Vol: 5"]
+	Forest_3 -> Company_7 [label="Vol: 4"]
+	Forest_4 -> Company_2 [label="Vol: 8"]
+	Forest_4 -> Company_6 [label="Vol: 5"]
+	Forest_4 -> Company_9 [label="Vol: 4"]
+	Company_1 -> Company_2 [label="Vol: 2"]
+	Company_1 -> Consumer_4 [label="Vol: 1"]
+	Company_2 -> Company_10 [label="Vol: 6"]
+	Company_2 -> Consumer_4 [label="Vol: 3"]
+	Company_3 -> Company_5 [label="Vol: 6"]
+	Company_3 -> Consumer_3 [label="Vol: 3"]
+	Company_5 -> Consumer_3 [label="Vol: 3"]
+	Company_5 -> Consumer_5 [label="Vol: 1"]
+	Company_6 -> Consumer_1 [label="Vol: 2"]
+	Company_6 -> Company_8 [label="Vol: 1"]
+	Company_7 -> Consumer_3 [label="Vol: 1"]
+	Company_7 -> Company_4 [label="Vol: 1"]
+	Company_7 -> Consumer_1 [label="Vol: 1"]
+	Company_8 -> Company_10 [label="Vol: 1"]
+	Company_8 -> Consumer_3 [label="Vol: 1"]
+	Company_8 -> Consumer_1 [label="Vol: 1"]
+	Company_9 -> Company_3 [label="Vol: 4"]
+	Company_9 -> Company_5 [label="Vol: 2"]
+	Company_9 -> Consumer_2 [label="Vol: 2"]
+	Company_10 -> Company_3 [label="Vol: 2"]
+	Company_10 -> Company_9 [label="Vol: 2"]
+	Company_10 -> Consumer_2 [label="Vol: 1"]
+}
