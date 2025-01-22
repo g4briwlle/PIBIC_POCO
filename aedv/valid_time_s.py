@@ -87,7 +87,7 @@ def ajusta_df_time_s(entrada_ou_saida: str, full_date_range: pd.DatetimeIndex) -
 full_date_range = pd.date_range(start='2017-01-01', end='2017-12-31')
 
 # Selecionar empresas por volume de saída/entrada ao longo do ano
-df_hist_cambios = pd.read_csv(r'aedv\historial_cambios_me_epp_solo.csv', low_memory=False)
+df_hist_cambios = pd.read_csv(r'data\historial_cambios_me_epp_solo.csv', low_memory=False)
 emp_plotadas = df_hist_cambios["CPF_CNPJ_Rem"]
 
 # Cria os df's de series temporais
@@ -97,9 +97,11 @@ df_time_s_saida = ajusta_df_time_s('saida', full_date_range)
 if __name__ == "__main__":
 
     nice_print(" Dfs de entrada e de saida ")
-    print(df_time_s_entrada.head(14), 'O'*50)
+    # Configurar para mostrar 367 linhas
+    with pd.option_context('display.max_rows', 367): # Averiguando se as datas estao certas mesmo
+        nice_print(df_time_s_entrada.head(367))
     df_time_s_entrada.info()
-    print(df_time_s_saida.head(14), 'o'*50)
+    nice_print(df_time_s_saida.head(14))
     df_time_s_saida.info()
 
     # plt.title('Volume de Madeira que Saiu das Empresas selecionadas (2017)')

@@ -1,4 +1,9 @@
 """ Módulo de Agrupamento de empresa e volume
+01
+
+cria o 'df_2017' com todas as transações de madeira do ano 2017, não ordenado
+cria 'df_entrada' e 'df_saida' com todas as transações de madeira de entrada/saida de todas as empresas, não ordenado
+
 """
 
 import pandas as pd
@@ -14,14 +19,14 @@ dfs = []
 
 # Iterar sobre os arquivos de janeiro a dezembro
 for month in range(1, 13):
-    # Gerar o nome do arquivo com base no mês (ex: df_01.csv, df_02.csv, ...)
+    # Gerar o nome do arquivo com base no mês (ex: df_01.csv, df_02.csv, ..., df_12.csv)
     file_path = os.path.join(folder_path, f"df_{month:02d}.csv")
     
     # Ler o arquivo CSV e adicioná-lo à lista de dataframes
-    df = pd.read_csv(file_path, dtype={'Registro': str, 'CPF_CNPJ_Rem': str, 'CPF_CNPJ_Des': str})
+    df = pd.read_csv(file_path, dtype={'Registro': str, 'CPF_CNPJ_Rem': str, 'CPF_CNPJ_Des': str}, low_memory=False)
     
-    # Converter a coluna 'datetimeDtEmissao' para datetime
-    df['datetimeDtEmissao'] = pd.to_datetime(df['datetimeDtEmissao'], errors='coerce')
+    # Converter a coluna 'DtEmissao' para datetime
+    df['DtEmissao'] = pd.to_datetime(df['DtEmissao'], errors='coerce', dayfirst=True)
     
     # Adicionar o dataframe lido à lista
     dfs.append(df)
@@ -44,7 +49,7 @@ def agrupa_e_arruma(df: pd.DataFrame, eh_entrada: bool) -> pd.DataFrame:
             CPF/CNPJ da empresa de origem.
         - 'CPF_CNPJ_Des' : str
             CPF/CNPJ da empresa de destino.
-        - 'datetimeDtEmissao' : datetime-like
+        - 'DtEmissao' : datetime-like
             Data da emissão da transação.
         - 'Volume' : float
             Volume de madeira transacionado.
@@ -72,20 +77,28 @@ def agrupa_e_arruma(df: pd.DataFrame, eh_entrada: bool) -> pd.DataFrame:
     """
     # Agrupando os meses das empresas de destino e origem para separar em df_entrada e df_saida
     if eh_entrada:
-        df = df_2017.groupby(['CPF_CNPJ_Rem', df_2017['datetimeDtEmissao'].dt.date])['Volume'].sum().reset_index()
+        df = df_2017.groupby(['CPF_CNPJ_Rem', df_2017['DtEmissao'].dt.date])['Volume'].sum().reset_index()
     else:
-        df = df_2017.groupby(['CPF_CNPJ_Des', df_2017['datetimeDtEmissao'].dt.date])['Volume'].sum().reset_index()
+        df = df_2017.groupby(['CPF_CNPJ_Des', df_2017['DtEmissao'].dt.date])['Volume'].sum().reset_index()
     
     # Settando as colunas e ajustando para datetime
-    df.columns = ['Empresa', 'Data', 'Volume_Saida']
+    if eh_entrada:
+        df.columns = ['Empresa', 'Data', 'Volume_Entrada']
+    else:
+        df.columns = ['Empresa', 'Data', 'Volume_Saida']
     df['Data'] = pd.to_datetime(df['Data'])
 
     return df
    
 # Agrupar por empresa de origem e somar o volume de madeira que saiu de cada empresa ao longo do ano
-df_saida = agrupa_e_arruma(df_2017, eh_entrada=True)
-df_entrada = agrupa_e_arruma(df_2017, eh_entrada=False)
+df_saida = agrupa_e_arruma(df_2017, eh_entrada=False)
+df_entrada = agrupa_e_arruma(df_2017, eh_entrada=True)
 
 if __name__ == "__main__":
+    print(df_2017)
     nice_print("Coluna de data")
     print(df_entrada["Data"])
+    nice_print("df entrada")
+    print(df_entrada.head(20))
+    nice_print("df saida")
+    print(df_saida.head(20))

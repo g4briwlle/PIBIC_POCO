@@ -5,7 +5,7 @@ import numpy as np
 from valid_time_s import *
 
 # Usando o df de emps que trocaram de nome ao longo dos 11 anos (55 emps +/-)
-df_hist_cambios = pd.read_csv(r'aedv\historial_cambios_me_epp_solo.csv')
+df_hist_cambios = pd.read_csv(r'data\historial_cambios_me_epp_solo.csv')
 emps_suspicious = df_hist_cambios["CPF_CNPJ_Rem"]
 emps_suspicious.rename(columns = {"CPF_CNPJ_Rem": "Empresa"})
 
