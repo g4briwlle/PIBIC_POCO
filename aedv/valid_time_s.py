@@ -1,6 +1,9 @@
 """ Módulo de criação de séries temporais de empresas suspeitas
+02
 
-Para alterar as empresas plota
+Transformação de df_saida/entrada não ordenado para séries temporais válidas
+O formato do df é tal que: cada 365 linhas são os dias 
+Pode-se alterar as empresas selecionadas para visualização nos dfs no final do código, bem como o date_range dos dfs
 """
 
 # Ignorando warnings
@@ -99,33 +102,9 @@ if __name__ == "__main__":
     nice_print(" Dfs de entrada e de saida ")
     # Configurar para mostrar 367 linhas
     with pd.option_context('display.max_rows', 367): # Averiguando se as datas estao certas mesmo
-        nice_print(df_time_s_entrada.head(367))
+        print(df_time_s_entrada.head(367), 'O'*50)
     df_time_s_entrada.info()
-    nice_print(df_time_s_saida.head(14))
+    print(df_time_s_saida.head(14), 'o'*50)
     df_time_s_saida.info()
 
-    # plt.title('Volume de Madeira que Saiu das Empresas selecionadas (2017)')
-    # plt.xlabel('Data')
-    # plt.ylabel('Volume de Saída (m³)')
-    # plt.legend(loc='upper left', bbox_to_anchor=(1,1), title="Empresas")
-    # plt.xticks(rotation=45)
-    # plt.tight_layout()
-    # plt.show()
-
-    # # Plotando as séries temporais de entrada ao longo do tempo para as 10 maiores empresas
-    # plt.figure(figsize=(12, 6))
-
-    # plt.title('Volume de Madeira que Entrou nas Empresas selecionadas(2017)')
-    # plt.xlabel('Data')
-    # plt.ylabel('Volume de Entrada (m³)')
-    # plt.legend(loc='upper left', bbox_to_anchor=(1,1), title="Empresas")
-    # plt.xticks(rotation=45)
-    # plt.tight_layout()
-    # plt.show()
-
-    # for emp in emp_plotadas:
-    #     df_temp =  df_saida[df_saida['Empresa']==emp]
-    #     if not df_temp.empty:
-    #         print(emp)        # aqui eu vi que eles nao tem interseção
-    # print(df_saida[df_saida['Empresa']==emp_plotadas[1]])
-
+    
