@@ -1,10 +1,15 @@
+""" Módulo do cálculo do fast DTW - NÃO MAIS USADO
+03
+
+"""
+
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
 import pandas as pd
 import numpy as np
 from valid_time_s import *
 
-# Usando o df de emps que trocaram de nome ao longo dos 11 anos (55 emps +/-)
+# Usando o df de emps que trocaram de nome ao longo dos 11 anos (55 emps)
 df_hist_cambios = pd.read_csv(r'data\historial_cambios_me_epp_solo.csv')
 emps_suspicious = df_hist_cambios["CPF_CNPJ_Rem"]
 emps_suspicious.rename(columns = {"CPF_CNPJ_Rem": "Empresa"})

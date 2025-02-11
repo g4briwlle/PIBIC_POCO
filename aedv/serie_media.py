@@ -1,3 +1,8 @@
+""" Módulo do cálculo da série temporal 'média'
+04 
+
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -19,7 +24,7 @@ def arruma_data(df):
 # Nomes de todas as empresas
 lista_empresas = list(df_time_s_entrada["Empresa"].unique())
 
-df_mensal = arruma_data(df_time_s_entrada)
+df_mensal = arruma_data(df_time_s_entrada) # Agora o df_time_s_entrada ja vem com esse formato
 
 # Agrupe por empresa e mês, somando os valores de entrada para cada mês
 df_mensal = df_time_s_entrada.groupby([df_time_s_entrada['Data'].dt.to_period('M'), 'Empresa'])['Volume_Entrada'].sum().reset_index()
@@ -47,4 +52,5 @@ plt.show()
 
 
 nice_print(f"Olhando empresa: {20825514000193}")
+print("oi")
 print(df_time_s_entrada[df_time_s_entrada["Empresa"] == "20825514000193"]["Volume_Entrada"])
