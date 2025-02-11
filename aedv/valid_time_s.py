@@ -10,9 +10,13 @@ Pode-se alterar as empresas selecionadas para visualização nos dfs no final do
 import warnings
 warnings.filterwarnings("ignore")
 
+import reading_data
 import matplotlib.pyplot as plt
 from creating_df import *
 from utils import *
+import pathlib 
+
+hist_cambios_path = reading_data.DATA_DIR / 'historial_cambios_me_epp_solo.csv'
 
 def ajusta_df_time_s(entrada_ou_saida: str, full_date_range: pd.DatetimeIndex) -> pd.DataFrame:
     """
@@ -90,7 +94,7 @@ def ajusta_df_time_s(entrada_ou_saida: str, full_date_range: pd.DatetimeIndex) -
 full_date_range = pd.date_range(start='2017-01-01', end='2017-12-31')
 
 # Selecionar empresas por volume de saída/entrada ao longo do ano
-df_hist_cambios = pd.read_csv(r'data\historial_cambios_me_epp_solo.csv', low_memory=False)
+df_hist_cambios = pd.read_csv(hist_cambios_path, low_memory=False)
 emp_plotadas = df_hist_cambios["CPF_CNPJ_Rem"]
 
 # Cria os df's de series temporais

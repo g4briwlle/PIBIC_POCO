@@ -6,13 +6,11 @@ cria 'df_entrada' e 'df_saida' com todas as transações de madeira de entrada/s
 
 """
 
+import reading_data
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from utils import *
-
-# Caminho para a pasta que contém os arquivos CSV
-folder_path = "data/df_meses_2017_mandioqueiro"
 
 # Inicializar uma lista para armazenar os dataframes mensais
 dfs = []
@@ -20,7 +18,8 @@ dfs = []
 # Iterar sobre os arquivos de janeiro a dezembro
 for month in range(1, 13):
     # Gerar o nome do arquivo com base no mês (ex: df_01.csv, df_02.csv, ..., df_12.csv)
-    file_path = os.path.join(folder_path, f"df_{month:02d}.csv")
+    # file_path = os.path.join(reading_data.df_meses_2017_mandioqueiro, f"df_{month:02d}.csv")
+    file_path = reading_data.df_meses_2017_mandioqueiro / f"df_{month:02d}.csv"
     
     # Ler o arquivo CSV e adicioná-lo à lista de dataframes
     df = pd.read_csv(file_path, dtype={'Registro': str, 'CPF_CNPJ_Rem': str, 'CPF_CNPJ_Des': str}, low_memory=False)
