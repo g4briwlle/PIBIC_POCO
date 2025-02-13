@@ -63,7 +63,7 @@ def ajusta_df_time_s(entrada_ou_saida: str, full_date_range: pd.DatetimeIndex) -
         # Converter pra datetime pra usar no groupby
         df_temp_mensal['Data'] = pd.to_datetime(df_temp_mensal['Data'])
 
-        # Somando as transações de volume
+        # Somando as transações de volume para criar um ponto no gráfico pra cada mês
         if entrada_ou_saida == 'entrada':
             df_temp_mensal = df_temp_mensal.groupby(df_temp_mensal['Data'].dt.to_period('M'))['Volume_Entrada'].sum().reset_index()
         elif entrada_ou_saida == 'saida':
@@ -90,6 +90,35 @@ def ajusta_df_time_s(entrada_ou_saida: str, full_date_range: pd.DatetimeIndex) -
 
     return df_time_s
 
+def segundo_ajuste_df_time_s(entrada_ou_saida: bool, full_date_range: pd.DatetimeIndex) -> pd.DataFrame:
+    """Realiza um segundo ajuste no DataFrame de séries temporais, transformando-o em um formato pivoteado, onde as datas se tornam colunas.
+
+    Esta função reorganiza os dados de entrada ou saída de madeira, estruturando o DataFrame de modo que cada linha represente uma empresa e cada coluna (exceto a primeira) corresponda a um dia do ano de 2017.
+
+    Parameters
+    ----------
+    entrada_ou_saida : bool
+        Define se o ajuste será feito para o DataFrame de entrada de madeira (True) ou para o de saída de madeira (False).
+    full_date_range : pd.DatetimeIndex
+        Índice de datas cobrindo todo o ano de 2017, utilizado para garantir consistência no pivoteamento.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Um DataFrame onde:
+        - O índice representa as empresas associadas às transações.
+        - As colunas representam os dias do ano no formato datetime.
+        - Os valores indicam o volume diário de madeira movimentado por cada empresa.
+    """
+
+    # Itera sobre as emps selecionadas para colocar seus dados no df
+    if entrada_ou_saida == True: # Caso o df seja o de volume de entrada
+        df_segundo_ajuste = df_time_s_entrada.pivot(index='Empresa', columns='Data', values='Volume_Entrada')
+    else: # Caso o df seja o de volume de saída
+        df_segundo_ajuste = df_time_s_saida.pivot(index='Empresa', columns='Data', values='Volume_Saida')
+
+    return df_segundo_ajuste
+
 # Gerar um range completo de datas para 2017 pra usar na função
 full_date_range = pd.date_range(start='2017-01-01', end='2017-12-31')
 
@@ -101,14 +130,20 @@ emp_plotadas = df_hist_cambios["CPF_CNPJ_Rem"]
 df_time_s_entrada = ajusta_df_time_s('entrada', full_date_range)
 df_time_s_saida = ajusta_df_time_s('saida', full_date_range)
 
-if __name__ == "__main__":
+# Cria os df's pivoteados (ajustados pela segunda vez)
+segundo_df_time_s_entrada = segundo_ajuste_df_time_s(entrada_ou_saida=True, full_date_range=full_date_range)
+segundo_df_time_s_saida = segundo_ajuste_df_time_s(entrada_ou_saida=False, full_date_range=full_date_range)
 
-    nice_print(" Dfs de entrada e de saida ")
+if __name__ == "__main__":
     # Configurar para mostrar 367 linhas
-    with pd.option_context('display.max_rows', 367): # Averiguando se as datas estao certas mesmo
-        print(df_time_s_entrada.head(367), 'O'*50)
+    with pd.option_context('display.max_rows', 100): # Averiguando se as datas estao certas mesmo
+        print('df time s entrada','\n', df_time_s_entrada.head(367), '\n')
     df_time_s_entrada.info()
-    print(df_time_s_saida.head(14), 'o'*50)
+    print('df time s saida', '\n', df_time_s_saida.head(14), '\n')
     df_time_s_saida.info()
+    print('\n', 'segundo df time saida', segundo_df_time_s_saida.head(14), '\n')
+    segundo_df_time_s_saida.info()
+    print('\n', 'segundo df time entrada', segundo_df_time_s_entrada.head(14), '\n')
+    segundo_df_time_s_entrada.info()
 
     
