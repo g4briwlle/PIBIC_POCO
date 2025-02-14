@@ -36,9 +36,9 @@ def plot_subclusters(entrada_ou_saida: bool):
         if entrada_ou_saida == True:
             ax.set_ylabel('valor de entrada')
         else: 
-            ax.setylabel('valor de saida')
+            ax.set_ylabel('valor de saida')
 
-plot_subclusters(entrada_ou_saida=True)
+plot_subclusters(entrada_ou_saida=False)
 plt.xlabel('Tempo')
-plt.tight_layout
-plt.show
+plt.tight_layout()
+plt.show()
