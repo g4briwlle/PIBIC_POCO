@@ -98,6 +98,6 @@ if __name__ == "__main__":
     nice_print("Coluna de data")
     print(df_entrada["Data"])
     nice_print("df entrada")
-    print(df_entrada.head(20))
+    print(df_entrada.head(30))
     nice_print("df saida")
     print(df_saida.head(20))

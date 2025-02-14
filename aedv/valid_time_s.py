@@ -63,25 +63,16 @@ def ajusta_df_time_s(entrada_ou_saida: str, full_date_range: pd.DatetimeIndex) -
         # Converter pra datetime pra usar no groupby
         df_temp_mensal['Data'] = pd.to_datetime(df_temp_mensal['Data'])
 
-        # Somando as transações de volume para criar um ponto no gráfico pra cada mês
-        if entrada_ou_saida == 'entrada':
-            df_temp_mensal = df_temp_mensal.groupby(df_temp_mensal['Data'].dt.to_period('M'))['Volume_Entrada'].sum().reset_index()
-        elif entrada_ou_saida == 'saida':
-            df_temp_mensal = df_temp_mensal.groupby(df_temp_mensal['Data'].dt.to_period('M'))['Volume_Saida'].sum().reset_index()
-        
-        # Recolocando como serie temporal de dia a dia
-        df_temp_mensal['Data'] = df_temp_mensal['Data'].dt.to_timestamp()
-
         # De acordo com a indexação de data, incluo o valor 0 para dias sem transação em todo o 2017 e depois 
         # reseto o indice para o normal
         df_temp_mensal = df_temp_mensal.set_index('Data').reindex(full_date_range, fill_value=0).reset_index()
-
+        
         # Rechamando a coluna index de Data porque isso se alterou ali em cima
         df_temp_mensal = df_temp_mensal.rename(columns={'index': 'Data'})
 
         # Colocando de volta a empresa como elemento da coluna 'Empresa'
         df_temp_mensal["Empresa"] = empresa
-
+        
         # Criar o df de series temporais que sera usado, contendo todas as series temps de todas as empresas
         if index == 0:
             df_time_s = df_temp_mensal
@@ -137,7 +128,7 @@ segundo_df_time_s_saida = segundo_ajuste_df_time_s(entrada_ou_saida=False, full_
 if __name__ == "__main__":
     # Configurar para mostrar 367 linhas
     with pd.option_context('display.max_rows', 100): # Averiguando se as datas estao certas mesmo
-        print('df time s entrada','\n', df_time_s_entrada.head(367), '\n')
+        print('df time s saida','\n', df_time_s_saida.head(385), '\n')
     df_time_s_entrada.info()
     print('df time s saida', '\n', df_time_s_saida.head(14), '\n')
     df_time_s_saida.info()
@@ -145,5 +136,3 @@ if __name__ == "__main__":
     segundo_df_time_s_saida.info()
     print('\n', 'segundo df time entrada', segundo_df_time_s_entrada.head(14), '\n')
     segundo_df_time_s_entrada.info()
-
-    
