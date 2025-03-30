@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 
-num_clusters = 3 # Settando num de clusters
+num_clusters = 5 # Settando num de clusters
 kmeans = KMeans(n_clusters=num_clusters) # Criando o objeto algoritmo kmeans
 
 # Criando os rotulos de classificaçao dos clusters das series temporais de entrada e saida 
