@@ -1,8 +1,10 @@
 """ Módulo de criação de séries temporais de empresas suspeitas
 02
 
-Transformação de df_saida/entrada não ordenado para séries temporais válidas
-O formato do df é tal que: cada 365 linhas são os dias 
+Transformação de df_saida/entrada não ordenado para séries temporais válidas de duas maneiras, dado que a segunda só é atingida após fazer a transformação na primeira.
+
+1ª: cada 365 linhas são os dias do ano de uma empresa, as proximas 365 sao de outra empresa
+2ª: pivoteamento tal que tem 365 linhas, os dias, e cada linha é uma empresa
 Pode-se alterar as empresas selecionadas para visualização nos dfs no final do código, bem como o date_range dos dfs
 """
 
@@ -12,11 +14,11 @@ warnings.filterwarnings("ignore")
 
 import reading_data
 import matplotlib.pyplot as plt
-from creating_df import *
+from creating_df_2017 import *
 from utils import *
 import pathlib 
 
-hist_cambios_path = reading_data.DATA_DIR / 'historial_cambios_me_epp_solo.csv'
+hist_cambios_path = reading_data.historial_cambios_me_epp_solo
 
 def ajusta_df_time_s(entrada_ou_saida: str, full_date_range: pd.DatetimeIndex) -> pd.DataFrame:
     """
@@ -81,7 +83,7 @@ def ajusta_df_time_s(entrada_ou_saida: str, full_date_range: pd.DatetimeIndex) -
 
     return df_time_s
 
-def segundo_ajuste_df_time_s(entrada_ou_saida: bool, full_date_range: pd.DatetimeIndex) -> pd.DataFrame:
+def segundo_ajuste_df_time_s(df_time_s_passed:pd.DataFrame, entrada_ou_saida: bool, full_date_range: pd.DatetimeIndex) -> pd.DataFrame:
     """Realiza um segundo ajuste no DataFrame de séries temporais, transformando-o em um formato pivoteado, onde as datas se tornam colunas.
 
     Esta função reorganiza os dados de entrada ou saída de madeira, estruturando o DataFrame de modo que cada linha represente uma empresa e cada coluna (exceto a primeira) corresponda a um dia do ano de 2017.
@@ -104,9 +106,9 @@ def segundo_ajuste_df_time_s(entrada_ou_saida: bool, full_date_range: pd.Datetim
 
     # Itera sobre as emps selecionadas para colocar seus dados no df
     if entrada_ou_saida == True: # Caso o df seja o de volume de entrada
-        df_segundo_ajuste = df_time_s_entrada.pivot(index='Empresa', columns='Data', values='Volume_Entrada')
+        df_segundo_ajuste = df_time_s_passed.pivot(index='Empresa', columns='Data', values='Volume_Entrada')
     else: # Caso o df seja o de volume de saída
-        df_segundo_ajuste = df_time_s_saida.pivot(index='Empresa', columns='Data', values='Volume_Saida')
+        df_segundo_ajuste = df_time_s_passed.pivot(index='Empresa', columns='Data', values='Volume_Saida')
 
     return df_segundo_ajuste
 
@@ -122,8 +124,8 @@ df_time_s_entrada = ajusta_df_time_s('entrada', full_date_range)
 df_time_s_saida = ajusta_df_time_s('saida', full_date_range)
 
 # Cria os df's pivoteados (ajustados pela segunda vez)
-segundo_df_time_s_entrada = segundo_ajuste_df_time_s(entrada_ou_saida=True, full_date_range=full_date_range)
-segundo_df_time_s_saida = segundo_ajuste_df_time_s(entrada_ou_saida=False, full_date_range=full_date_range)
+segundo_df_time_s_entrada = segundo_ajuste_df_time_s(df_time_s_passed=df_time_s_entrada, entrada_ou_saida=True, full_date_range=full_date_range)
+segundo_df_time_s_saida = segundo_ajuste_df_time_s(df_time_s_passed=df_time_s_saida, entrada_ou_saida=False, full_date_range=full_date_range)
 
 if __name__ == "__main__":
     # Configurar para mostrar 367 linhas
