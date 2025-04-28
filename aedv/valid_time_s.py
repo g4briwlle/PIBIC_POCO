@@ -1,4 +1,4 @@
-""" Módulo de criação de séries temporais de empresas suspeitas
+""" Módulo de criação de séries temporais com uma seleção de empresas desejada a partir dos datasets iniciais
 02
 
 Transformação de df_saida/entrada não ordenado para séries temporais válidas de duas maneiras, dado que a segunda só é atingida após fazer a transformação na primeira.
@@ -12,15 +12,19 @@ Pode-se alterar as empresas selecionadas para visualização nos dfs no final do
 import warnings
 warnings.filterwarnings("ignore")
 
+import time
+from tqdm import tqdm
 import reading_data
 import matplotlib.pyplot as plt
 from creating_df_2017 import *
 from utils import *
 import pathlib 
 
+start = time.time()
+
 hist_cambios_path = reading_data.historial_cambios_me_epp_solo
 
-def ajusta_df_time_s(entrada_ou_saida: str, full_date_range: pd.DatetimeIndex) -> pd.DataFrame:
+def ajusta_df_time_s(emp_plotadas:pd.DataFrame , entrada_ou_saida: str, full_date_range: pd.DatetimeIndex) -> pd.DataFrame:
     """
     Ajusta o DataFrame `df_entrada` ou `df_saida` para representar séries temporais diárias de transações de madeira
     para cada empresa especificada.
@@ -51,36 +55,37 @@ def ajusta_df_time_s(entrada_ou_saida: str, full_date_range: pd.DatetimeIndex) -
     - `emp_plotadas`, `df_entrada` e `df_saida` também devem estar disponíveis no escopo da função.
     """
 
+    # Lista dos dfs temporarios mensais para concatenar apenas no final
+    dfs = []
+
+    # Criando um df filtrado para a iteração nele
+    if entrada_ou_saida == 'entrada':
+        df_filtrado = df_entrada[df_entrada['Empresa'].isin(emp_plotadas)].copy()
+        df_filtrado.columns = ['Empresa', 'Data', 'Volume_Entrada']
+    elif entrada_ou_saida == 'saida':
+        df_filtrado = df_saida[df_saida['Empresa'].isin(emp_plotadas)].copy()
+        df_filtrado.columns = ['Empresa', 'Data', 'Volume_Saida']
+
+    # Converter pra datetime pra usar no groupby
+    df_filtrado['Data'] = pd.to_datetime(df_filtrado['Data'])
+
     # Itera emps selecionadas para ajuste de df de series temporais
-    for index, empresa in enumerate(emp_plotadas):
-        empresa = str(empresa)
-        # Inicializando os df_temp_mensal de acordo com a especificação
-        if entrada_ou_saida == 'entrada':
-            df_temp_mensal = df_entrada[df_entrada['Empresa'] == empresa]
-            df_temp_mensal.columns = ['Empresa', 'Data', 'Volume_Entrada']
-        elif entrada_ou_saida == 'saida':
-            df_temp_mensal = df_saida[df_saida['Empresa'] == empresa]
-            df_temp_mensal.columns = ['Empresa', 'Data', 'Volume_Saida']
-
-        # Converter pra datetime pra usar no groupby
-        df_temp_mensal['Data'] = pd.to_datetime(df_temp_mensal['Data'])
-
+    for empresa, df_empresa in tqdm(df_filtrado.groupby("Empresa"), desc="Processando empresas"):
         # De acordo com a indexação de data, incluo o valor 0 para dias sem transação em todo o 2017 e depois 
         # reseto o indice para o normal
-        df_temp_mensal = df_temp_mensal.set_index('Data').reindex(full_date_range, fill_value=0).reset_index()
+        df_empresa = df_empresa.set_index('Data').reindex(full_date_range, fill_value=0).reset_index()
         
         # Rechamando a coluna index de Data porque isso se alterou ali em cima
-        df_temp_mensal = df_temp_mensal.rename(columns={'index': 'Data'})
+        df_empresa = df_empresa.rename(columns={'index': 'Data'})
 
         # Colocando de volta a empresa como elemento da coluna 'Empresa'
-        df_temp_mensal["Empresa"] = empresa
+        df_empresa["Empresa"] = empresa
         
-        # Criar o df de series temporais que sera usado, contendo todas as series temps de todas as empresas
-        if index == 0:
-            df_time_s = df_temp_mensal
-        else:
-            df_time_s = pd.concat([df_time_s, df_temp_mensal], axis=0, ignore_index=True)               
+        # Adicionando df temporario a lista de dfs temporarios
+        dfs.append(df_empresa)           
 
+    # Transformando dfs temporarios em df grande definitivo
+    df_time_s = pd.concat(dfs, axis=0, ignore_index=True) 
     return df_time_s
 
 def segundo_ajuste_df_time_s(df_time_s_passed:pd.DataFrame, entrada_ou_saida: bool, full_date_range: pd.DatetimeIndex) -> pd.DataFrame:
@@ -119,22 +124,35 @@ full_date_range = pd.date_range(start='2017-01-01', end='2017-12-31')
 df_hist_cambios = pd.read_csv(hist_cambios_path, low_memory=False)
 emp_plotadas = df_hist_cambios["CPF_CNPJ_Rem"]
 
-# Cria os df's de series temporais
-df_time_s_entrada = ajusta_df_time_s('entrada', full_date_range)
-df_time_s_saida = ajusta_df_time_s('saida', full_date_range)
+# Cria os df's de series temporais das 55 empresas de cambio de nome
+print(df_hist_cambios["CPF_CNPJ_Rem"].astype(str).str.zfill(14))
+df_time_s_entrada_cambios = ajusta_df_time_s(df_hist_cambios["CPF_CNPJ_Rem"].astype(str).str.zfill(14), 'entrada', full_date_range)
+df_time_s_saida_cambios = ajusta_df_time_s(df_hist_cambios["CPF_CNPJ_Rem"].astype(str).str.zfill(14), 'saida', full_date_range)
+# Cria os df's pivoteados (ajustados pela segunda vez)
+segundo_df_time_s_entrada_cambios = segundo_ajuste_df_time_s(df_time_s_passed=df_time_s_entrada_cambios, entrada_ou_saida=True, full_date_range=full_date_range)
+segundo_df_time_s_saida_cambios = segundo_ajuste_df_time_s(df_time_s_passed=df_time_s_saida_cambios, entrada_ou_saida=False, full_date_range=full_date_range)
 
+# Cria os df's de series temporais de todas as empresas
+df_time_s_entrada = ajusta_df_time_s(df_entrada['Empresa'], 'entrada', full_date_range)
+df_time_s_saida = ajusta_df_time_s(df_entrada['Empresa'], 'saida', full_date_range)
 # Cria os df's pivoteados (ajustados pela segunda vez)
 segundo_df_time_s_entrada = segundo_ajuste_df_time_s(df_time_s_passed=df_time_s_entrada, entrada_ou_saida=True, full_date_range=full_date_range)
 segundo_df_time_s_saida = segundo_ajuste_df_time_s(df_time_s_passed=df_time_s_saida, entrada_ou_saida=False, full_date_range=full_date_range)
 
+end = time.time()
+
 if __name__ == "__main__":
+    print(f"Tempo de execução: {end - start:.2f} segundos")
     # Configurar para mostrar 367 linhas
     with pd.option_context('display.max_rows', 100): # Averiguando se as datas estao certas mesmo
-        print('df time s saida','\n', df_time_s_saida.head(385), '\n')
+        print('df time s entrada','\n', df_time_s_entrada.head(385), '\n')
     df_time_s_entrada.info()
+    print("*"*30)
     print('df time s saida', '\n', df_time_s_saida.head(14), '\n')
     df_time_s_saida.info()
+    print("*"*30)
     print('\n', 'segundo df time saida', segundo_df_time_s_saida.head(14), '\n')
     segundo_df_time_s_saida.info()
+    print("*"*30)
     print('\n', 'segundo df time entrada', segundo_df_time_s_entrada.head(14), '\n')
     segundo_df_time_s_entrada.info()
