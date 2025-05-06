@@ -93,6 +93,12 @@ def agrupa_e_arruma(df: pd.DataFrame, eh_entrada: bool) -> pd.DataFrame:
 df_saida = agrupa_e_arruma(df_2017, eh_entrada=False)
 df_entrada = agrupa_e_arruma(df_2017, eh_entrada=True)
 
+# Creating csv
+csv_saida_path = reading_data.DATA_DIR / "df_saida.csv"
+csv_entrada_path = reading_data.DATA_DIR / "df_entrada.csv"
+df_saida.to_csv(csv_saida_path)
+df_entrada.to_csv(csv_entrada_path)
+
 if __name__ == "__main__":
     print(df_2017)
     nice_print("Coluna de data")
