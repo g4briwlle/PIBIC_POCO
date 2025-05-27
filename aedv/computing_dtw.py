@@ -71,7 +71,7 @@ def calculate_dtw(time_series_passed: pd.DataFrame):
     # calculating cross similarity matrix com barra de progresso
     print("Calculando matriz de distância DTW (pode levar algum tempo)...")
     tempo_calculo = time.time()
-    distance_matrix = cdist_dtw(series_array, )
+    distance_matrix = cdist_dtw(series_array)
     tempo_fim = time.time()
     
     print(f"Matriz de distância calculada em {tempo_fim - tempo_calculo:.2f} segundos")
