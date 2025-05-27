@@ -1,4 +1,4 @@
-""" Módulo do cálculo do fast DTW - NÃO MAIS USADO
+""" Módulo do cálculo do fast DTW 
 03
 
 """
@@ -20,13 +20,31 @@ print(f"Iniciando execução do módulo de cálculo do fast DTW às {time.strfti
 # df_hist_cambios = pd.read_csv(reading_data.historial_cambios_me_epp_solo)
 # emps_suspicious = df_hist_cambios[["CPF_CNPJ_Rem"]].rename(columns = {"CPF_CNPJ_Rem": "Empresa"})
     
-# Transformando em 
+
+# LOADING DF'S TO TESTS: 100, 300, 500, 1000 samples first
+
+# Getting whole data, 4500 emps
 df_time_s_entrada = pd.read_csv(reading_data.df_time_s_entrada)
 df_time_s_entrada["Empresa"] = df_time_s_entrada["Empresa"].astype(str)
 
 segundo_df_time_s_entrada = pd.read_csv(reading_data.segundo_df_time_s_entrada)
 segundo_df_time_s_entrada["Empresa"] = segundo_df_time_s_entrada["Empresa"].astype(str)
-# emps_suspicious = emps_suspicious.astype(int)
+
+# 100 samples
+df_100_samples = segundo_df_time_s_entrada[:100]
+
+# 300
+df_300_samples = segundo_df_time_s_entrada[:300]
+
+# 500
+df_500_samples = segundo_df_time_s_entrada[:500]
+
+df_800_samples = segundo_df_time_s_entrada[:800]
+
+df_1000_samples= segundo_df_time_s_entrada[:1000]
+
+df_1500_samples= segundo_df_time_s_entrada[:1500]
+
 
 def calculate_dtw(time_series_passed: pd.DataFrame):
     """Calcula a matriz de distância DTW entre séries temporais.
@@ -53,7 +71,7 @@ def calculate_dtw(time_series_passed: pd.DataFrame):
     # calculating cross similarity matrix com barra de progresso
     print("Calculando matriz de distância DTW (pode levar algum tempo)...")
     tempo_calculo = time.time()
-    distance_matrix = cdist_dtw(series_array)
+    distance_matrix = cdist_dtw(series_array, )
     tempo_fim = time.time()
     
     print(f"Matriz de distância calculada em {tempo_fim - tempo_calculo:.2f} segundos")
@@ -67,8 +85,28 @@ def calculate_dtw(time_series_passed: pd.DataFrame):
     
     return distance_matrix
 
-distance_matrix = calculate_dtw(segundo_df_time_s_entrada)
-print(distance_matrix, distance_matrix)
+
+
+# Changing part
+
+distance_matrix1 = calculate_dtw(df_100_samples)
+print(distance_matrix1)
+
+distance_matrix2 = calculate_dtw(df_300_samples)
+print(distance_matrix2)
+
+# distance_matrix3 = calculate_dtw(df_500_samples)
+# print(distance_matrix3)
+
+"""distance_matrix4 = calculate_dtw(df_800_samples)
+print(distance_matrix4)
+
+distance_matrix5 = calculate_dtw(df_1000_samples)
+print(distance_matrix5)
+
+distance_matrix6 = calculate_dtw(df_1500_samples)
+print(distance_matrix6)"""
+
 
 tempo_inicio_dbscan = time.time()
 dbscan_object = DBSCAN(
@@ -77,16 +115,41 @@ dbscan_object = DBSCAN(
     min_samples=3
 )
 
-labels = dbscan_object.fit_predict(distance_matrix)
-print(labels)
-tempo_fim_dbscan = time.time()
 
+labels1 = dbscan_object.fit_predict(distance_matrix1)
+print("labels 100")
+print(labels1)
 # Analisando resultados
-n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
-n_noise = list(labels).count(-1)
+n_clusters = len(set(labels1)) - (1 if -1 in labels1 else 0)
+n_noise = list(labels1).count(-1)
 print(f"Número de clusters encontrados: {n_clusters}")
 print(f"Número de pontos de ruído: {n_noise}")
-print(f"Distribuição dos clusters: {np.bincount(labels + 1)}")
+print(f"Distribuição dos clusters: {np.bincount(labels1 + 1)}")
+
+
+labels2 = dbscan_object.fit_predict(distance_matrix2)
+print("labels 100")
+print(labels2)
+# Analisando resultados
+n_clusters = len(set(labels2)) - (1 if -1 in labels2 else 0)
+n_noise = list(labels2).count(-1)
+print(f"Número de clusters encontrados: {n_clusters}")
+print(f"Número de pontos de ruído: {n_noise}")
+print(f"Distribuição dos clusters: {np.bincount(labels2 + 1)}")
+
+
+"""labels3 = dbscan_object.fit_predict(distance_matrix3)
+print("labels 100")
+print(labels3)
+# Analisando resultados
+n_clusters = len(set(labels3)) - (1 if -1 in labels3 else 0)
+n_noise = list(labels3).count(-1)
+print(f"Número de clusters encontrados: {n_clusters}")
+print(f"Número de pontos de ruído: {n_noise}")
+print(f"Distribuição dos clusters: {np.bincount(labels3 + 1)}")"""
+
+
+tempo_fim_dbscan = time.time()
 
 # Tempo total de execução
 tempo_fim_total = time.time()
